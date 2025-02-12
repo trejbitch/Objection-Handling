@@ -1,0 +1,14 @@
+src/app/dialog.css
+
+
+
+
+
+.rounded-dialog [role="dialog"] {
+    border-radius: 60px !important;
+    overflow: hidden;
+  }
+  
+  .rounded-dialog [role="dialog"] > * {
+    border-radius: 60px !important;
+  }  
