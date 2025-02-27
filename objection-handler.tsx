@@ -194,18 +194,18 @@ function ObjectionSquare({
     <Button
       onClick={handleAddCustom}
       variant="outline"
-      className="w-full py-1 px-2 text-xs flex items-center justify-center bg-white hover:bg-gray-50 transition-all duration-300 rounded-[15px] border border-dashed border-gray-300 hover:border-[#5b06be] group"
-    >
+      className="w-full py-1 px-2 text-xs flex items-center justify-center bg-white hover:bg-gray-50 transition-all duration-300 rounded-[10px] border border-dashed border-gray-300 hover:border-[#5b06be] group"
+>
       <Plus className="w-3 h-3 mr-1 text-gray-400 group-hover:text-[#5b06be] transition-colors duration-300" />
       Add Custom Objection
     </Button>
   )
 
   return (
-    <div className="bg-white rounded-[20px] shadow-[0_0_15px_rgba(0,0,0,0.1)] border border-gray-100 p-4 flex flex-col h-[320px] transition-all duration-300 hover:shadow-[0_0_20px_rgba(91,6,190,0.15)] hover:scale-[1.02] group">
-      {/* Icon Container */}
-      <div className="flex justify-center mb-4">
-        <div className="w-16 h-16 bg-white rounded-[20px] shadow-[0_0_15px_rgba(0,0,0,0.1)] flex items-center justify-center transition-all duration-300 group-hover:shadow-[0_0_20px_rgba(91,6,190,0.15)] group-hover:scale-[1.02] overflow-hidden">
+<div className="bg-white rounded-[20px] border border-[#ddd] px-4 pt-4 pb-0 flex flex-col h-[250px] transition-all duration-300 hover:scale-[1.02] group">
+    {/* Icon Container */}
+      <div className="flex justify-center mb-2">
+      <div className="w-16 h-16 bg-white rounded-[20px] border border-[#ddd] flex items-center justify-center transition-all duration-300 group-hover:scale-[1.02] overflow-hidden">
           {(() => {
             const iconMap: Record<string, string> = {
               "Foreclosure-Related Objections":
@@ -244,49 +244,49 @@ function ObjectionSquare({
       </div>
 
       {/* Title */}
-      <h3 className="text-center font-semibold mb-2 min-h-[48px] flex items-center justify-center">
+      <h3 className="text-center font-semibold mb-1 min-h-[30px] flex items-center justify-center">
         {objection.title}
       </h3>
 
       {/* Content Container */}
       <div
-        className={`bg-gradient-to-br from-white via-gray-50 to-white border border-gray-200 rounded-[24px] p-4 mb-4 h-[140px] shadow-lg flex flex-col justify-center items-stretch relative transition-all duration-300 hover:shadow-xl hover:border-[#5b06be] hover:scale-[1.02] overflow-hidden ${!isCustom ? "cursor-pointer" : ""}`}
-        onClick={!isCustom ? () => setShowObjections(true) : undefined}
+  className={`bg-gradient-to-br from-white via-gray-50 to-white border border-[#ddd] rounded-[15px] p-2 mb-1 h-[60px] flex flex-col justify-center items-stretch relative transition-all duration-300 hover:border-[#5b06be] hover:scale-[1.02] overflow-hidden ${!isCustom ? "cursor-pointer" : ""}`}
+  onClick={!isCustom ? () => setShowObjections(true) : undefined}
       >
         {isCustom ? (
-          <div className="w-full h-full flex flex-col items-center justify-center space-y-2">
-            {addCustomButton}
-            {objection.lines.length > 0 && (
-              <Button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setShowObjections(true)
-                }}
-                variant="outline"
-                className="w-full py-2 text-xs flex items-center justify-center bg-white hover:bg-gray-50 transition-all duration-300 rounded-[15px] border border-gray-300 hover:border-[#5b06be] group"
-              >
-                <FileText className="w-3 h-3 mr-1 text-gray-400 group-hover:text-[#5b06be] transition-colors duration-300" />
-                <span className="font-medium text-gray-600 group-hover:text-[#5b06be] transition-colors duration-300">
-                  See Your Objections ({objection.lines.length})
-                </span>
-              </Button>
-            )}
-          </div>
+          <div className="w-full h-full flex flex-col items-center justify-center space-y-1 px-0">
+{addCustomButton}
+  {objection.lines.length > 0 && (
+    <Button
+      onClick={(e) => {
+        e.stopPropagation()
+        setShowObjections(true)
+      }}
+      variant="outline"
+      className="w-full py-1 px-2 text-xs flex items-center justify-center bg-white hover:bg-gray-50 transition-all duration-300 rounded-[10px] border border-gray-300 hover:border-[#5b06be] group"
+>
+      <FileText className="w-3 h-3 mr-1 text-gray-400 group-hover:text-[#5b06be] transition-colors duration-300" />
+      <span className="font-medium text-gray-600 group-hover:text-[#5b06be] transition-colors duration-300">
+        See Your Objections ({objection.lines.length})
+      </span>
+    </Button>
+  )}
+</div>
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center relative">
-            <span className="text-3xl font-bold text-[#5b06be]">{objection.lines.length}</span>
-            <div className="flex items-center mt-2">
-              <span className="text-sm text-gray-600">Objections</span>
-              <Info className="w-4 h-4 ml-1 text-gray-600 transition-all duration-300 hover:scale-110" />
-            </div>
-          </div>
+<div className="w-full h-full flex flex-row items-center justify-center gap-2 relative">
+  <span className="text-3xl font-bold text-[#5b06be]">{objection.lines.length}</span>
+  <div className="flex items-center">
+    <span className="text-sm text-gray-600">Objections</span>
+    <Info className="w-4 h-4 ml-1 text-gray-600 transition-all duration-300 hover:scale-110" />
+  </div>
+</div>
         )}
       </div>
 
       {/* Start Button */}
-      <Button
-        className="bg-[#5b06be] hover:bg-[#5b06be] text-white rounded-[15px] w-full font-semibold text-base shadow-[0_0_20px_rgba(91,6,190,0.3)] transition-[font-size] duration-300 hover:text-lg mt-auto"
-        onClick={() => {
+<Button
+className="bg-[#5b06be] hover:bg-[#5b06be] text-white rounded-[15px] w-full font-semibold text-base shadow-[0_0_20px_rgba(91,6,190,0.3)] transition-[font-size] duration-300 hover:text-lg mt-2"
+onClick={() => {
           if (objection.lines.length < 3) {
             toast({
               title: "Not enough objections",
@@ -304,7 +304,7 @@ function ObjectionSquare({
 
       {/* Objections Popup */}
       <Dialog open={showObjections} onOpenChange={setShowObjections}>
-        <DialogContent className="rounded-dialog bg-gradient-to-br from-white to-gray-50 font-['Montserrat'] p-4 sm:p-6 border border-gray-100 shadow-[0_0_50px_rgba(91,6,190,0.15)] sm:max-w-[90vw] w-[95vw]">
+      <DialogContent className="rounded-dialog bg-gradient-to-br from-white to-gray-50 font-['Montserrat'] p-4 sm:p-6 border border-[#ddd] sm:max-w-[90vw] w-[95vw]">
           <DialogHeader className="pb-3 mb-3 border-b border-gray-100">
             <div className="flex items-center justify-start gap-4">
               <DialogTitle className="text-2xl font-bold text-[#5b06be]">{objection.title}</DialogTitle>
@@ -326,8 +326,7 @@ function ObjectionSquare({
             {objection.lines.map((line, index) => (
               <div
                 key={index}
-                className="flex items-start p-2 sm:p-3 rounded-[15px] bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group"
-              >
+                className="flex items-start p-2 sm:p-3 rounded-[15px] bg-white border border-[#ddd] transition-all duration-300 group">
                 <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#5b06be] text-white text-xs font-semibold mr-2 flex-shrink-0 shadow-sm group-hover:scale-110 transition-transform duration-300">
                   {index + 1}
                 </span>
@@ -366,7 +365,7 @@ function CustomObjectionsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-white rounded-[20px] font-['Montserrat']">
+<DialogContent className="bg-white rounded-[20px] font-['Montserrat'] border border-[#ddd]">
         <DialogHeader>
           <DialogTitle>Add Custom Objections</DialogTitle>
         </DialogHeader>
@@ -416,17 +415,16 @@ export default function ObjectionHandler() {
   }
 
   return (
-    <div className="bg-white rounded-[20px] shadow-[0_0_15px_rgba(0,0,0,0.1)] p-2 sm:p-4 md:p-6 font-['Montserrat'] w-full mx-auto my-2 sm:my-4 md:my-6 max-w-[calc(100%-1rem)] sm:max-w-[calc(100%-2rem)] md:max-w-[calc(100%-3rem)] relative">
-      <Button
+<div className="bg-white p-2 sm:p-4 md:p-6 font-['Montserrat'] w-full mx-auto relative">
+    <Button
         className="absolute right-4 top-4 bg-[#f8b922] hover:bg-[#f8b922]/90 text-white rounded-[15px] font-semibold shadow-[0_0_20px_rgba(248,185,34,0.3)] transition-all duration-300 hover:scale-105"
         onClick={() => (window.location.href = "https://trainedbyai.com/results")}
       >
         See Your Results
       </Button>
-      <div className="text-center mb-6">
-        <h1 className="text-[#5b06be] text-3xl font-bold mb-2">Objection Handling</h1>
-        <h2 className="text-black text-base font-semibold">100 Common Real Estate Investment Objections</h2>
-      </div>
+      <div className="text-center mb-4">
+  <h2 className="text-black text-base font-bold">100 Common Real Estate Investment Objections</h2>
+</div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
         {objections.map((objection, index) => (
           <ObjectionSquare
