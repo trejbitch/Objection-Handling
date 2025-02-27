@@ -6,7 +6,7 @@ src/components/ui/objection-handler.tsx
 
 
      
-      
+
 "use client"
 
 import { useState } from "react"
@@ -277,7 +277,7 @@ function ObjectionSquare({
 </div>
         ) : (
 <div className="w-full h-full flex flex-row items-center justify-center gap-2 relative">
-  <span className="text-3xl font-bold text-[#5b06be]">{objection.lines.length}</span>
+<span className="text-[20px] font-bold text-[#5b06be]">{objection.lines.length}</span>
   <div className="flex items-center">
     <span className="text-sm text-gray-600">Objections</span>
     <Info className="w-4 h-4 ml-1 text-gray-600 transition-all duration-300 hover:scale-110" />
