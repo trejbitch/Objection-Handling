@@ -4,6 +4,9 @@ src/components/ui/objection-handler.tsx
 
 
 
+
+     
+      
 "use client"
 
 import { useState } from "react"
@@ -244,9 +247,9 @@ function ObjectionSquare({
       </div>
 
       {/* Title */}
-      <h3 className="text-center font-semibold mb-1 min-h-[30px] flex items-center justify-center">
-        {objection.title}
-      </h3>
+      <h3 className="text-center font-semibold mb-1 min-h-[30px] flex items-center justify-center text-[14px]">
+  {objection.title}
+</h3>
 
       {/* Content Container */}
       <div
