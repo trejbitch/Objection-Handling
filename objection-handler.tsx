@@ -6,10 +6,9 @@ src/components/ui/objection-handler.tsx
 
 
      
-
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { AlertCircle, UserPlus, Briefcase, DollarSign, Clock, ShieldCheck, FileText, Plus, Info, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/custom-dialog"
@@ -23,6 +22,12 @@ type Objection = {
   title: string
   icon: React.ReactNode
   lines: string[]
+}
+
+type CustomObjection = {
+  id: string
+  objection_text: string
+  created_at: string
 }
 
 const initialObjections: Objection[] = [
@@ -175,16 +180,31 @@ const initialObjections: Objection[] = [
   },
 ]
 
+// Function to get URL parameters
+function getUrlParams() {
+  // Check if window is defined (client-side)
+  if (typeof window !== 'undefined') {
+    const params = new URLSearchParams(window.location.search);
+    return {
+      memberId: params.get('memberId'),
+      teamId: params.get('teamId')
+    };
+  }
+  return { memberId: null, teamId: null };
+}
+
 function ObjectionSquare({
   objection,
   isCustom,
   onAddCustom,
   onRemoveObjection,
+  isLoading,
 }: {
   objection: Objection
   isCustom: boolean
   onAddCustom: () => void
   onRemoveObjection: (index: number) => void
+  isLoading: boolean
 }) {
   const [showObjections, setShowObjections] = useState(false)
 
@@ -198,17 +218,18 @@ function ObjectionSquare({
       onClick={handleAddCustom}
       variant="outline"
       className="w-full py-1 px-2 text-xs flex items-center justify-center bg-white hover:bg-gray-50 transition-all duration-300 rounded-[10px] border border-dashed border-gray-300 hover:border-[#5b06be] group"
->
+      disabled={isLoading}
+    >
       <Plus className="w-3 h-3 mr-1 text-gray-400 group-hover:text-[#5b06be] transition-colors duration-300" />
       Add Custom Objection
     </Button>
   )
 
   return (
-<div className="bg-white rounded-[20px] border border-[#ddd] px-4 pt-4 pb-0 flex flex-col h-[250px] transition-all duration-300 hover:scale-[1.02] group">
-    {/* Icon Container */}
+    <div className="bg-white rounded-[20px] border border-[#ddd] px-4 pt-4 pb-0 flex flex-col h-[250px] transition-all duration-300 hover:scale-[1.02] group">
+      {/* Icon Container */}
       <div className="flex justify-center mb-2">
-      <div className="w-16 h-16 bg-white rounded-[20px] border border-[#ddd] flex items-center justify-center transition-all duration-300 group-hover:scale-[1.02] overflow-hidden">
+        <div className="w-16 h-16 bg-white rounded-[20px] border border-[#ddd] flex items-center justify-center transition-all duration-300 group-hover:scale-[1.02] overflow-hidden">
           {(() => {
             const iconMap: Record<string, string> = {
               "Foreclosure-Related Objections":
@@ -248,98 +269,99 @@ function ObjectionSquare({
 
       {/* Title */}
       <h3 className="text-center font-semibold mb-1 min-h-[30px] flex items-center justify-center text-[14px]">
-  {objection.title}
-</h3>
+        {objection.title}
+      </h3>
 
       {/* Content Container */}
       <div
-  className={`bg-gradient-to-br from-white via-gray-50 to-white border border-[#ddd] rounded-[15px] p-2 mb-1 h-[60px] flex flex-col justify-center items-stretch relative transition-all duration-300 hover:border-[#5b06be] hover:scale-[1.02] overflow-hidden ${!isCustom ? "cursor-pointer" : ""}`}
-  onClick={!isCustom ? () => setShowObjections(true) : undefined}
+        className={`bg-gradient-to-br from-white via-gray-50 to-white border border-[#ddd] rounded-[15px] p-2 mb-1 h-[60px] flex flex-col justify-center items-stretch relative transition-all duration-300 hover:border-[#5b06be] hover:scale-[1.02] overflow-hidden ${!isCustom ? "cursor-pointer" : ""}`}
+        onClick={!isCustom ? () => setShowObjections(true) : undefined}
       >
         {isCustom ? (
           <div className="w-full h-full flex flex-col items-center justify-center space-y-1 px-0">
-{addCustomButton}
-  {objection.lines.length > 0 && (
-    <Button
-      onClick={(e) => {
-        e.stopPropagation()
-        setShowObjections(true)
-      }}
-      variant="outline"
-      className="w-full py-1 px-2 text-xs flex items-center justify-center bg-white hover:bg-gray-50 transition-all duration-300 rounded-[10px] border border-gray-300 hover:border-[#5b06be] group"
->
-      <FileText className="w-3 h-3 mr-1 text-gray-400 group-hover:text-[#5b06be] transition-colors duration-300" />
-      <span className="font-medium text-gray-600 group-hover:text-[#5b06be] transition-colors duration-300">
-        See Your Objections ({objection.lines.length})
-      </span>
-    </Button>
-  )}
-</div>
+            {addCustomButton}
+            {objection.lines.length > 0 && (
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setShowObjections(true)
+                }}
+                variant="outline"
+                className="w-full py-1 px-2 text-xs flex items-center justify-center bg-white hover:bg-gray-50 transition-all duration-300 rounded-[10px] border border-gray-300 hover:border-[#5b06be] group"
+                disabled={isLoading}
+              >
+                <FileText className="w-3 h-3 mr-1 text-gray-400 group-hover:text-[#5b06be] transition-colors duration-300" />
+                <span className="font-medium text-gray-600 group-hover:text-[#5b06be] transition-colors duration-300">
+                  See Your Objections ({objection.lines.length})
+                </span>
+              </Button>
+            )}
+          </div>
         ) : (
-<div className="w-full h-full flex flex-row items-center justify-center gap-2 relative">
-<span className="text-[20px] font-bold text-[#5b06be]">{objection.lines.length}</span>
-  <div className="flex items-center">
-    <span className="text-sm text-gray-600">Objections</span>
-    <Info className="w-4 h-4 ml-1 text-gray-600 transition-all duration-300 hover:scale-110" />
-  </div>
-</div>
+          <div className="w-full h-full flex flex-row items-center justify-center gap-2 relative">
+            <span className="text-[20px] font-bold text-[#5b06be]">{objection.lines.length}</span>
+            <div className="flex items-center">
+              <span className="text-sm text-gray-600">Objections</span>
+              <Info className="w-4 h-4 ml-1 text-gray-600 transition-all duration-300 hover:scale-110" />
+            </div>
+          </div>
         )}
       </div>
 
       {/* Start Button */}
-<Button
-className="bg-[#5b06be] hover:bg-[#5b06be] text-white rounded-[15px] w-full font-semibold text-base shadow-[0_0_20px_rgba(91,6,190,0.3)] transition-[font-size] duration-300 hover:text-lg mt-2"
-onClick={() => {
+      <Button
+        className="bg-[#5b06be] hover:bg-[#5b06be] text-white rounded-[15px] w-full font-semibold text-base shadow-[0_0_20px_rgba(91,6,190,0.3)] transition-[font-size] duration-300 hover:text-lg mt-2"
+        onClick={() => {
           if (objection.lines.length < 3) {
-            toast({
-              title: "Not enough objections",
-              description: "You need at least 3 objections to start. Please add more custom objections.",
-              variant: "destructive",
-            })
+            toast.error("You need at least 3 objections to start. Please add more custom objections.")
             onAddCustom()
           } else {
             window.location.href = "https://trainedbyai.com"
           }
         }}
+        disabled={isLoading}
       >
         START
       </Button>
 
       {/* Objections Popup */}
       <Dialog open={showObjections} onOpenChange={setShowObjections}>
-      <DialogContent className="rounded-dialog bg-gradient-to-br from-white to-gray-50 font-['Montserrat'] p-4 sm:p-6 border border-[#ddd] sm:max-w-[90vw] w-[95vw]">
-          <DialogHeader className="pb-3 mb-3 border-b border-gray-100">
-            <div className="flex items-center justify-start gap-4">
-              <DialogTitle className="text-2xl font-bold text-[#5b06be]">{objection.title}</DialogTitle>
+        <DialogContent className="rounded-lg bg-gradient-to-br from-white to-gray-50 font-['Montserrat'] p-3 sm:p-4 border border-[#ddd] sm:max-w-[700px] w-[95vw] max-h-[80vh] overflow-y-auto">
+          <DialogHeader className="pb-2 mb-2 border-b border-gray-100">
+            <div className="flex items-center justify-start gap-3">
+              <DialogTitle className="text-lg font-bold text-[#5b06be]">{objection.title}</DialogTitle>
               {isCustom && (
                 <Button
                   onClick={onAddCustom}
                   variant="outline"
-                  className="py-2 text-xs flex items-center justify-center bg-white hover:bg-gray-50 transition-all duration-300 rounded-[15px] border border-dashed border-gray-300 hover:border-[#5b06be] group"
+                  className="py-1 text-xs flex items-center justify-center bg-white hover:bg-gray-50 transition-all duration-300 rounded-lg border border-dashed border-gray-300 hover:border-[#5b06be] group"
+                  disabled={isLoading}
                 >
                   <Plus className="w-3 h-3 mr-1 text-gray-400 group-hover:text-[#5b06be] transition-colors duration-300" />
-                  <span className="font-medium text-gray-600 group-hover:text-[#5b06be] transition-colors duration-300">
-                    Add Custom Objection
+                  <span className="font-medium text-gray-600 group-hover:text-[#5b06be] transition-colors duration-300 text-xs">
+                    Add Custom
                   </span>
                 </Button>
               )}
             </div>
           </DialogHeader>
-          <div className="grid grid-cols-2 gap-2 sm:gap-3">
+          <div className="grid grid-cols-1 gap-2">
             {objection.lines.map((line, index) => (
               <div
                 key={index}
-                className="flex items-start p-2 sm:p-3 rounded-[15px] bg-white border border-[#ddd] transition-all duration-300 group">
-                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#5b06be] text-white text-xs font-semibold mr-2 flex-shrink-0 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                className="flex items-start p-2 rounded-lg bg-white border border-[#ddd] transition-all duration-300 group"
+              >
+                <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#5b06be] text-white text-xs font-semibold mr-2 flex-shrink-0 shadow-sm group-hover:scale-110 transition-transform duration-300">
                   {index + 1}
                 </span>
-                <span className="text-gray-700 text-xs sm:text-sm leading-tight flex-grow">{line}</span>
+                <span className="text-gray-700 text-xs leading-tight flex-grow">{line}</span>
                 {isCustom && (
                   <button
                     onClick={() => onRemoveObjection(index)}
                     className="ml-2 text-gray-400 hover:text-red-500 transition-colors duration-200"
+                    disabled={isLoading}
                   >
-                    <X className="w-4 h-4" />
+                    <X className="w-3 h-3" />
                   </button>
                 )}
               </div>
@@ -355,7 +377,13 @@ function CustomObjectionsModal({
   isOpen,
   onClose,
   onSave,
-}: { isOpen: boolean; onClose: () => void; onSave: (objection: string) => void }) {
+  isLoading,
+}: {
+  isOpen: boolean
+  onClose: () => void
+  onSave: (objection: string) => void
+  isLoading: boolean
+}) {
   const [customObjection, setCustomObjection] = useState("")
 
   const handleSave = () => {
@@ -368,22 +396,27 @@ function CustomObjectionsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-<DialogContent className="bg-white rounded-[20px] font-['Montserrat'] border border-[#ddd]">
+      <DialogContent className="bg-white rounded-lg font-['Montserrat'] border border-[#ddd] p-3 max-w-sm">
         <DialogHeader>
-          <DialogTitle>Add Custom Objections</DialogTitle>
+          <DialogTitle className="text-lg">Add Custom Objections</DialogTitle>
         </DialogHeader>
-        <p className="text-sm text-gray-600 mb-4">You need at least 3 objections to start.</p>
+        <p className="text-xs text-gray-600 mb-3">You need at least 3 objections to start.</p>
         <Input
           value={customObjection}
           onChange={(e) => setCustomObjection(e.target.value)}
-          className="border-0 bg-white rounded-xl ring-1 ring-gray-200 focus:ring-2 focus:ring-[#5b06be] focus:outline-none transition-all duration-200"
+          className="border-0 bg-white rounded-lg ring-1 ring-gray-200 focus:ring-2 focus:ring-[#5b06be] focus:outline-none transition-all duration-200 text-sm"
           placeholder="Enter your custom objection"
+          disabled={isLoading}
         />
-        <div className="flex justify-end space-x-2 mt-4">
-          <Button variant="outline" onClick={onClose} className="rounded-[15px]">
+        <div className="flex justify-end space-x-2 mt-3">
+          <Button variant="outline" onClick={onClose} className="rounded-lg text-xs" disabled={isLoading}>
             Cancel
           </Button>
-          <Button className="bg-[#5b06be] hover:bg-[#5b06be] text-white rounded-[15px]" onClick={handleSave}>
+          <Button
+            className="bg-[#5b06be] hover:bg-[#5b06be] text-white rounded-lg text-xs"
+            onClick={handleSave}
+            disabled={isLoading}
+          >
             Save
           </Button>
         </div>
@@ -393,41 +426,158 @@ function CustomObjectionsModal({
 }
 
 export default function ObjectionHandler() {
-  const [objections, setObjections] = useState(initialObjections)
+  const [objections, setObjections] = useState<Objection[]>(initialObjections)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [params, setParams] = useState({ memberId: null, teamId: null })
 
-  const handleAddCustomObjection = (newObjection: string) => {
-    setObjections((prev) => {
-      const newObjections = [...prev]
-      newObjections[7].lines = [newObjection, ...newObjections[7].lines]
-      return newObjections
-    })
-    setIsModalOpen(false)
-  }
+  // Get URL parameters on component mount
+  useEffect(() => {
+    setParams(getUrlParams());
+  }, [])
 
-  const handleRemoveObjection = (categoryIndex: number, objectionIndex: number) => {
-    if (categoryIndex === 7) {
+  // Fetch custom objections on component mount
+  useEffect(() => {
+    if (params.memberId) {
+      fetchCustomObjections()
+    }
+  }, [params.memberId])
+
+  const fetchCustomObjections = async () => {
+    if (!params.memberId) return;
+    
+    setIsLoading(true)
+    try {
+      const response = await fetch(`/api/objections?memberId=${params.memberId}`)
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch custom objections')
+      }
+      
+      const data = await response.json()
+      
+      // Update the custom objections category with fetched data
       setObjections((prev) => {
         const newObjections = [...prev]
-        newObjections[categoryIndex].lines = newObjections[categoryIndex].lines.filter(
-          (_, index) => index !== objectionIndex,
-        )
+        // If we have custom objections from the database, use them
+        if (data.objections && Array.isArray(data.objections)) {
+          newObjections[7].lines = data.objections.map((obj: CustomObjection) => obj.objection_text)
+        }
         return newObjections
       })
+    } catch (error) {
+      console.error('Error fetching custom objections:', error)
+      toast.error("Failed to load custom objections. Please try again later.")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleAddCustomObjection = async (newObjection: string) => {
+    if (!params.memberId) {
+      toast.error("Member ID is required. Please log in again.")
+      return;
+    }
+    
+    setIsLoading(true)
+    try {
+      const response = await fetch('/api/objections', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          objectionText: newObjection,
+          memberId: params.memberId,
+          teamId: params.teamId
+        }),
+      })
+      
+      if (!response.ok) {
+        throw new Error('Failed to add custom objection')
+      }
+      
+      // Update local state with the new objection
+      setObjections((prev) => {
+        const newObjections = [...prev]
+        newObjections[7].lines = [newObjection, ...newObjections[7].lines]
+        return newObjections
+      })
+      
+      toast.success("Custom objection added successfully!")
+    } catch (error) {
+      console.error('Error adding custom objection:', error)
+      toast.error("Failed to add custom objection. Please try again later.")
+    } finally {
+      setIsLoading(false)
+      setIsModalOpen(false)
+    }
+  }
+
+  const handleRemoveObjection = async (objectionIndex: number) => {
+    if (!params.memberId) {
+      toast.error("Member ID is required. Please log in again.")
+      return;
+    }
+
+    if (objectionIndex >= 0 && objectionIndex < objections[7].lines.length) {
+      setIsLoading(true)
+      try {
+        // Get the objection text to find it in the database
+        const objectionText = objections[7].lines[objectionIndex]
+        
+        // First get all objections to find the ID of the one we want to delete
+        const response = await fetch(`/api/objections?memberId=${params.memberId}`)
+        if (!response.ok) {
+          throw new Error('Failed to fetch objections for deletion')
+        }
+        
+        const data = await response.json()
+        const objectionToDelete = data.objections.find(
+          (obj: CustomObjection) => obj.objection_text === objectionText
+        )
+        
+        if (!objectionToDelete) {
+          throw new Error('Objection not found in database')
+        }
+        
+        // Now delete the objection using its ID
+        const deleteResponse = await fetch(`/api/objections?id=${objectionToDelete.id}&memberId=${params.memberId}`, {
+          method: 'DELETE',
+        })
+        
+        if (!deleteResponse.ok) {
+          throw new Error('Failed to delete objection')
+        }
+        
+        // Update local state to remove the objection
+        setObjections((prev) => {
+          const newObjections = [...prev]
+          newObjections[7].lines = newObjections[7].lines.filter((_, index) => index !== objectionIndex)
+          return newObjections
+        })
+        
+        toast.success("Custom objection removed successfully!")
+      } catch (error) {
+        console.error('Error removing custom objection:', error)
+        toast.error("Failed to remove custom objection. Please try again later.")
+      } finally {
+        setIsLoading(false)
+      }
     }
   }
 
   return (
-<div className="bg-white p-2 sm:p-4 md:p-6 font-['Montserrat'] w-full mx-auto relative">
-    <Button
+    <div className="bg-white p-2 sm:p-4 md:p-6 font-['Montserrat'] w-full mx-auto relative">
+      <Button
         className="absolute right-4 top-4 bg-[#f8b922] hover:bg-[#f8b922]/90 text-white rounded-[15px] font-semibold shadow-[0_0_20px_rgba(248,185,34,0.3)] transition-all duration-300 hover:scale-105"
         onClick={() => (window.location.href = "https://trainedbyai.com/results")}
       >
         See Your Results
       </Button>
       <div className="text-center mb-4">
-  <h2 className="text-black text-base font-bold">100 Common Real Estate Investment Objections</h2>
-</div>
+        <h2 className="text-black text-base font-bold">100 Common Real Estate Investment Objections</h2>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
         {objections.map((objection, index) => (
           <ObjectionSquare
@@ -435,7 +585,8 @@ export default function ObjectionHandler() {
             objection={objection}
             isCustom={index === 7}
             onAddCustom={() => setIsModalOpen(true)}
-            onRemoveObjection={(objectionIndex) => handleRemoveObjection(index, objectionIndex)}
+            onRemoveObjection={(objectionIndex) => handleRemoveObjection(objectionIndex)}
+            isLoading={isLoading}
           />
         ))}
       </div>
@@ -443,6 +594,7 @@ export default function ObjectionHandler() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSave={handleAddCustomObjection}
+        isLoading={isLoading}
       />
     </div>
   )
